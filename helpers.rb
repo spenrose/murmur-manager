@@ -10,7 +10,7 @@ def help
 	puts ""
 	pt "Args", "Effect"
 	pt "----", "------"
-	pt "[server-id] config", "List a server's config"
+	pt "[server-id] config [-json]", "List a server's config"
 	pt "[server-id] set [key] [val]", "Set a server's config value"
 	pt "[server-id] start", "Start a server"
 	pt "[server-id] stop", "Stop a server"
@@ -18,5 +18,5 @@ def help
 	pt "[server-id] destroy", "Permanently destroy a server"
 	pt "[server-id] supw [password]", "Set superuser password for this server"
 	pt "new", "Create a new server"
-	pt "list", "List existing servers"
+	pt "list [-json]", "List existing servers"
 end

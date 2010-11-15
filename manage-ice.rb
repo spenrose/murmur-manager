@@ -1,7 +1,9 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 BASE = File.expand_path(File.dirname(__FILE__))
 require File.join(BASE, "interfaces", "ice.rb")
 require File.join(BASE, 'helpers')
+require 'rubygems'
+require 'json'
 
 class UnknownCommandException < Exception; end
 
@@ -26,9 +28,13 @@ def server_command(meta, id, command = nil, *args)
 		raise "Cannot set a blank superuser password" if pw.nil? or pw == ""
 		server.setSuperuserPassword(pw)
 	when "", "config", nil
-		server.config.each do |key, val|
-			pt key, val.split("\n").first
-		end
+	  if !args.empty? && args.include?("-json")
+	    puts JSON.generate server.config
+    else
+		  server.config.each do |key, val|
+  			pt key, val.split("\n").first
+		  end
+	  end
 	else
 		raise UnknownCommandException 
 	end
@@ -37,12 +43,22 @@ end
 def meta_command(meta, command = nil, *args)
 	case command
 	when "list"
-		pt "Server ID", "Running", 2
-		pt "---------", "------", 2
+	  serverHash = Hash.new
+    meta.list_servers.each do |server|
+			serverHash[server.id] = server.isRunning
+	  end
+
+	  #output
+	  if !args.empty? && args.include?("-json")
+	    puts JSON.generate serverHash
+	  else
+		  pt "Server ID", "Running", 2
+  		pt "---------", "------", 2
 		
-		meta.list_servers.each do |server|
-			pt server.id, server.isRunning, 2
-		end
+  		serverHash.each do |key, value| 
+  		  pt key, value, 2 
+		  end
+	  end
 	when "new"
 		port = args.first
 		port = nil if !port.nil? and port.to_i == 0
